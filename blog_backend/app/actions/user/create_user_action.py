@@ -4,11 +4,7 @@ from app.config.database import SessionLocal
 from app.models.user import User
 # Importation du schéma de validation pour la création d'un utilisateur
 from app.requests.user.create_user_request import CreateUserRequest
-# Importation de CryptContext pour hacher les mots de passe avec bcrypt
-from passlib.context import CryptContext
-
-# Contexte de hachage : utilise bcrypt et marque les anciens algorithmes comme dépréciés
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from app.services.auth_service import hash_password
 
 
 # Action qui gère la création d'un nouvel utilisateur en base de données
@@ -17,7 +13,7 @@ def create_user_action(data: CreateUserRequest):
     db = SessionLocal()
     try:
         # Hash le mot de passe reçu avant de le stocker en base
-        hashed_password = pwd_context.hash(data.password)
+        hashed_password = hash_password(data.password)
         # Crée une instance du modèle User avec les données reçues
         user = User(
             name=data.name,
